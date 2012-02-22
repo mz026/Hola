@@ -2,6 +2,8 @@
  *  login.js
  */
 
+var loginURL = 'http://50.112.113.37/konotest/login/kono/c2FtbWkueS5sb25nQGdtYWlsLmNvbQ=='
+  , authURL = 'http://50.112.113.37/konotest/auth/5f8231a33a94bc55b8efcf2c4dcdebb85' ;
 var rest = require('restler')
   , funkyTest = require(__dirname + '/../funkyTest')
   , assert = require(__dirname + '/../myAssert');
@@ -11,7 +13,7 @@ var login = funkyTest.create({
   , operate: function(err, input) {
     var self = this;
 
-    rest.get('http://localhost/KonoServer/login/kono/c2FtbWkueS5sb25nQGdtYWlsLmNvbQ==')
+    rest.get(loginURL)
       .on('complete', function(result, response) {
         var error = null;
 
@@ -35,10 +37,10 @@ var login = funkyTest.create({
 var auth = funkyTest.create({
     name: 'auth api'
   , operate: function(err, input) {
-    console.log('input', input);
+    console.log('input', typeof input, input);
     var self = this;
-    rest.post('http://localhost/KonoServer/auth/5f8231a33a94bc55b8efcf2c4dcdebb85', {
-        body: {
+    rest.post(authURL, {
+        data: {
             p: 'hello'
           , t: input.token
         }
@@ -53,6 +55,7 @@ var auth = funkyTest.create({
   }
   , validate: function(result) {
     console.log(result);
+    assert.equal(result, 'Incorrect password');
   }
   , pass: function(err, target) {
     return target;
