@@ -14,29 +14,35 @@ var async = function(arg, cb) {
 
 var test1 = {
   operate: function(err, input) {
-    this(null, true);
+    return true;
   }
-  , validate: function(err, target) {
+  , validate: function(target) {
     console.log('target', target);
     assert.ok(target, 'assert target to be true');
     console.log('report ok in validate1');
-    this(null, target);
   } 
+  , pass: function(err, target) {
+    var toPass = ! target;
+    return toPass;
+  }
 };
 
 var test2 = {
   // 'this' is validate
   operate: function(err, input) {
     var self = this;
-    async( ! input, function(arg) {
+    async(input, function(arg) {
       self(null, arg);
     });
   }
-  , validate: function(err, target) {
+  , validate: function(target) {
     console.log('target2', target);
     assert.ok(target === false, 'assert target to be false');
     console.log('report ok in validate2');
   } 
+  , pass: function(err, target) {
+    return target;
+  }
 };
 
 // funkyTest.create(test1).run(null, 'dummy input');

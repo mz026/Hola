@@ -14,8 +14,12 @@ funkyTest.create = function(options) {
         return input;
       }
       , options.operate
-      , options.validate
-      , function pass(err, toPass) {
+      , function(err, target) {
+        options.validate(target);
+        return target;
+      }
+      , options.pass
+      , function (err, toPass) {
         if(typeof self === 'function') {
           self(err, toPass);
         }
