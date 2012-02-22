@@ -3,7 +3,7 @@
  */
 
 var assert = require('assert')
-  , funkyTest = require(__dirname + '/funkyTest')
+  , funkyTest = require(__dirname + '/../funkyTest')
 
 var async = function(arg, cb) {
   setTimeout(function() {
