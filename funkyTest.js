@@ -29,19 +29,20 @@ funkyTest.create = function(options) {
 
 funkyTest.run = function(args) {
   var tests = [].slice.call(arguments, 0)
-    , input = tests.shift();
+    , input = tests.shift()
+    , stepArgs = [];
 
-  step(
-    function () {
-      return input;
-    }
-    , tests[0].run
-    , tests[1].run
-    , function end(err, toPass) {
-      console.log(toPass);
-    }
-  );
-
+  stepArgs.push(function(){
+    return input;
+  });
+  tests.forEach(function(ele, idx, arr){
+    stepArgs.push(ele.run);
+  });
+  stepArgs.push(function(err, toPass) {
+    console.log('OK');
+  });
+  
+  step.apply(null, stepArgs);
 };
 
 module.exports = funkyTest;
