@@ -4,7 +4,6 @@
 
 var assert = require('assert')
   , funkyTest = require(__dirname + '/funkyTest')
-  , step = require('step');
 
 var async = function(arg, cb) {
   setTimeout(function() {
@@ -37,6 +36,7 @@ var test2 = {
   }
   , validate: function(target) {
     console.log('target2', target);
+//     assert.ok(target === true, 'assert target to be false');
     assert.ok(target === false, 'assert target to be false');
     console.log('report ok in validate2');
   } 

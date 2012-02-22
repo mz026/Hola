@@ -5,7 +5,9 @@ var funkyTest = {}
   , step = require('step');
 
 funkyTest.create = function(options) {
-  var test = {}; 
+  var test = {}
+    , operate = decorateWithErrorHandling(options.operate)
+    , pass = decorateWithErrorHandling(options.pass); 
 
   test.run = function(err, input) {
     var self = this;
@@ -13,13 +15,17 @@ funkyTest.create = function(options) {
       function start() {
         return input;
       }
-      , options.operate
+      , operate
       , function(err, target) {
         options.validate(target);
         return target;
       }
-      , options.pass
+      , pass
       , function (err, toPass) {
+        if(err) {
+          throw err;
+        }
+        // junction between tests.
         if(typeof self === 'function') {
           self(err, toPass);
         }
@@ -46,7 +52,19 @@ funkyTest.run = function(args) {
     console.log('OK');
   });
   
-  step.apply(null, stepArgs);
+  step.apply(this, stepArgs);
 };
+
+function decorateWithErrorHandling(func) {
+  var funcWithErrHandling = function(args) {
+    var argsArray = [].slice.call(arguments, 0);
+    if (argsArray[0]) {
+      this(argsArray[0]);
+      return;
+    }
+    return func.apply(this, arguments);
+  };
+  return funcWithErrHandling;
+}
 
 module.exports = funkyTest;
