@@ -2,8 +2,8 @@
  *  login.js
  */
 
-var loginURL = 'http://50.112.113.37/konotest/login/kono/c2FtbWkueS5sb25nQGdtYWlsLmNvbQ=='
-  , authURL = 'http://50.112.113.37/konotest/auth/5f8231a33a94bc55b8efcf2c4dcdebb85' ;
+var loginURL = 'dummy';
+  , authURL = 'dummy';
 var rest = require('restler')
   , funkyTest = require(__dirname + '/../funkyTest')
   , assert = require(__dirname + '/../myAssert');
