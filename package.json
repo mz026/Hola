@@ -1,0 +1,7 @@
+{
+    "name" : "funkyTest"
+  , "version" : "0.0.1"
+  , "dependencies": {
+      "step": ">= 0.0.5"
+  }
+}
