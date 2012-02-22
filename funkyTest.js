@@ -15,7 +15,7 @@ funkyTest.create = function(options) {
     var self = this;
     step(
       function start() {
-        console.log(('Start test: ' + testName.bold + ' ...').white);
+        console.log(('\nStart test: ' + testName.bold + ' ...').white);
         return input;
       }
       , operate
@@ -53,7 +53,7 @@ funkyTest.run = function(args) {
     stepArgs.push(ele.run);
   });
   stepArgs.push(function(err, toPass) {
-    console.log('yes!!!'.bold.green);
+    console.log('\nyes!!!'.bold.green);
   });
   
   step.apply(this, stepArgs);
