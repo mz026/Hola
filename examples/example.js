@@ -43,8 +43,18 @@ var test2 = {
   }
 };
 
-// funkyTest.create(test1).run(null, 'dummy input');
 
 var t1 = funkyTest.create(test1);
 var t2 = funkyTest.create(test2);
-funkyTest.run('dummy input', t1, t2);
+
+// way1:
+// funkyTest.create(test1).run(null, 'dummy input');
+// way2
+// funkyTest.run('dummy input', t1, t2);
+
+var group = funkyTest.group('myGroup', [t1, t2]);
+
+// way3:
+group.run('hello');
+// way4:
+// funkyTest.run('dummy', group);

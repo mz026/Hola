@@ -42,6 +42,42 @@ funkyTest.create = function(options) {
   return test;
 };
 
+funkyTest.group = function(name, testArray) {
+  var group = {
+      name: name
+    , tests: testArray
+  };
+
+  group.run = function(err, input) {
+    var stepArgs = []
+      , self = this;
+
+    stepArgs.push(function(){
+      console.log(('\nStart group: ' + group.name.bold + ' ...').white);
+      input = (input === undefined) ? '' : input;
+      return input;
+    });
+    group.tests.forEach(function(ele, idx, arr){
+      stepArgs.push(ele.run);
+    });
+    stepArgs.push(function(err, toPass) {
+      console.log(('\nend group ' + group.name).bold.green);
+      if(err) {
+        throw err;
+      }
+      // junction between tests.
+      if(typeof self === 'function') {
+        self(err, toPass);
+      }
+      return toPass;
+    });
+
+    step.apply(this, stepArgs);
+  };
+
+  return group;
+};
+
 funkyTest.run = function(args) {
   var tests = [].slice.call(arguments, 0)
     , input = tests.shift()
