@@ -2,22 +2,26 @@
  *  funkyTest.js
  */ 
 var funkyTest = {}
-  , step = require('step');
+  , step = require('step')
+  , colors = require('colors');
 
 funkyTest.create = function(options) {
   var test = {}
     , operate = decorateWithErrorHandling(options.operate)
-    , pass = decorateWithErrorHandling(options.pass); 
+    , pass = decorateWithErrorHandling(options.pass)
+    , testName = options.name || ''; 
 
   test.run = function(err, input) {
     var self = this;
     step(
       function start() {
+        console.log(('Start test: ' + testName.bold + ' ...').white);
         return input;
       }
       , operate
       , function(err, target) {
         options.validate(target);
+        console.log(('Test ' + testName + ': OK').green);
         return target;
       }
       , pass
@@ -49,7 +53,7 @@ funkyTest.run = function(args) {
     stepArgs.push(ele.run);
   });
   stepArgs.push(function(err, toPass) {
-    console.log('OK');
+    console.log('yes!!!'.bold.green);
   });
   
   step.apply(this, stepArgs);
