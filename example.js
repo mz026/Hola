@@ -12,13 +12,12 @@ var async = function(arg, cb) {
 };
 
 var test1 = {
-  operate: function(err, input) {
+  name: 'my cool test one'
+  , operate: function(err, input) {
     return true;
   }
   , validate: function(target) {
-    console.log('target', target);
     assert.ok(target, 'assert target to be true');
-    console.log('report ok in validate1');
   } 
   , pass: function(err, target) {
     var toPass = ! target;
@@ -28,17 +27,16 @@ var test1 = {
 
 var test2 = {
   // 'this' is validate
-  operate: function(err, input) {
+  name: 'my rock test two'
+  , operate: function(err, input) {
     var self = this;
     async(input, function(arg) {
       self(null, arg);
     });
   }
   , validate: function(target) {
-    console.log('target2', target);
 //     assert.ok(target === true, 'assert target to be false');
     assert.ok(target === false, 'assert target to be false');
-    console.log('report ok in validate2');
   } 
   , pass: function(err, target) {
     return target;
