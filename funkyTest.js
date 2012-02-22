@@ -1,31 +1,47 @@
 /**
  *  funkyTest.js
  */ 
-var extendMe = require(__dirname + '/lib/extendme/extendme')
-  , funkyTest = {};
+var funkyTest = {}
+  , step = require('step');
 
 funkyTest.create = function(options) {
-  var operate = options.operate
-    , validate = options.validate
-    , test = {}; 
+  var test = {}; 
 
-  test.run = function(input) {
-    var result = operate.call(null, input);
-    validate(result);
-    return result;
+  test.run = function(err, input) {
+    var self = this;
+    step(
+      function start() {
+        return input;
+      }
+      , options.operate
+      , options.validate
+      , function pass(err, toPass) {
+        if(typeof self === 'function') {
+          self(err, toPass);
+        }
+        return toPass;
+      }
+    );
   };
 
   return test;
 };
 
 funkyTest.run = function(args) {
-  var tests = [].slice.call(arguments, 0);
-  tests.shift();
+  var tests = [].slice.call(arguments, 0)
+    , input = tests.shift();
 
-  var input;
-  for (var idx = 0; idx < tests.length; idx ++) {
-    input = tests[idx].run(input);
-  }
+  step(
+    function () {
+      return input;
+    }
+    , tests[0].run
+    , tests[1].run
+    , function end(err, toPass) {
+      console.log(toPass);
+    }
+  );
+
 };
 
 module.exports = funkyTest;
