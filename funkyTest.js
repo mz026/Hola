@@ -15,6 +15,7 @@ funkyTest.create = function(options) {
     var self = this;
     step(
       function start() {
+        var input = undefined === input ? '' : input;
         console.log(('\nStart test: ' + testName.bold + ' ...').white);
         return input;
       }
