@@ -57,4 +57,48 @@ exports.hola = {
       t.done();
     });
   }
+  , 'can run multiple' : function(t) {
+    var hasV_1 = false
+      , hasP_1 = false
+      , hasV_2 = false
+      , hasP_2 = false;
+
+    var test_1 = hola.createTest({
+      excecute: function(init, callback) {
+        callback(init);
+      }
+      , validate: function(data) {
+        hasV_1 = true;
+        return true;
+      }
+      , pass: function(data) {
+        hasP_1 = true;
+        return data + '!!';
+      }
+    });
+
+    var test_2 = hola.createTest({
+      excecute: function(init, callback) {
+        callback(init);
+      }
+      , validate: function(data) {
+        hasV_2 = true;
+        return true;
+      }
+      , pass: function(data) {
+        hasP_2 = true;
+        return data + '@@';
+      }
+    });
+
+    hola.runMulti('hello', [test_1, test_2], function(data) {
+      t.equal(data, 'hello!!@@');
+      t.ok(hasV_1, 'hasV_1');
+      t.ok(hasP_1, 'hasP_1');
+      t.ok(hasV_2, 'hasV_2');
+      t.ok(hasP_2, 'hasP_2');
+      t.done();
+    });
+
+  }
 };

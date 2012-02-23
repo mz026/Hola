@@ -22,4 +22,30 @@ hola.createTest = function(options) {
   return test;
 };
 
+hola.runMulti = function(data, tests, callback) {
+
+// codes with 2 tests
+//
+//   tests[0].run(data, function(data) {
+//     tests[1].run(data, function(data) {
+//       callback.call(null, data);
+//     });
+//   });
+
+  tests[0].run(data, generateNextCallback(0));
+
+  function generateNextCallback(index) {
+    if (index + 1 === tests.length) {
+      return function(data) {
+        callback.call(null, data);
+      };
+    } else {
+      return function(data) {
+        tests[index + 1].run(data, generateNextCallback(index + 1));
+      };
+    }
+  }; 
+
+};
+
 module.exports = hola;
