@@ -48,4 +48,14 @@ hola.runMulti = function(data, tests, callback) {
 
 };
 
+hola.group = function(units) {
+  var group = {};
+  group.units = units;
+  group.run = function(data, callback) {
+    hola.runMulti(data, this.units, callback);
+  };
+  return group;
+};
+
+
 module.exports = hola;
