@@ -8,17 +8,17 @@ hola.createTest = function(options) {
 
   var test = {
     run: function(data, callback) {
-      var onExecuted = generateOnExecuted(callback);
+      var onExecuted = generateOnExecuted(callback, data);
       reportStart('test ' + name);
       excecute(data, onExecuted);
     }
   };
 
-  function generateOnExecuted(callback) {
-    return function(data) {
-      validate(data);
+  function generateOnExecuted(callback, initData) {
+    return function(executedResult) {
+      validate(executedResult, initData);
       reportOK('test ' + name);
-      callback.call(null, pass(data));
+      callback.call(null, pass(executedResult));
     };
   };
 
@@ -59,8 +59,10 @@ hola.group = function(name, units) {
   group.name = name;
   group.run = function(data, callback) {
     reportStart('group ' + name);
-    hola.runMulti(data, this.units, callback);
-    reportOK('group ' + name);
+    hola.runMulti(data, this.units, function(data) {
+      reportOK('group ' + name);
+      callback.call(null, data);
+    });
   };
   return group;
 };
