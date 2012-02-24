@@ -2,7 +2,7 @@
  *  test file for funkyTest.
  */
 
-var assert = require(__dirname + '/../myAssert')
+var assert = require(__dirname + '/myAssert')
   , hola = require(__dirname + '/../hola')
 
 var asyncFunction = function(arg, cb) {
