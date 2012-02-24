@@ -6,143 +6,195 @@ exports.hola = {
     t.done();
   }
   , 'can run one sync': function(t) {
-    var hasV = false
-      , hasP = false;
-
-    var test = hola.createTest({
-      excecute: function(init, callback) {
-        callback(init);
-      }
-      , validate: function(data) {
-        hasV = true;
-        return true;
-      }
-      , pass: function(data) {
-        hasP = true;
+    var testSet = testTemplateWith({
+      pass: function(data) {
         return data + '!!';
       }
     });
-
-    test.run('hello', function(data) {
+    testSet.test.run('hello', function(data) {
       t.equal(data, 'hello!!');
-      t.ok(hasV, 'hasV');
-      t.ok(hasP, 'hasP');
+      t.ok(testSet.hasValidateCalled(), 'hasV');
+      t.ok(testSet.hasPassCalled(), 'hasP');
       t.done();
     });
   }
   , 'can run one async': function(t) {
-    var hasV = false
-      , hasP = false;
-
-    var test = hola.createTest({
+    var asyncTestSet = testTemplateWith({
       excecute: function(init, callback) {
         setTimeout(function() {
           callback(init);
         }, 500);
       }
-      , validate: function(data) {
-        hasV = true;
-        return true;
-      }
       , pass: function(data) {
-        hasP = true;
         return data + '!!';
       }
     });
-
-    test.run('hello', function(data) {
+    asyncTestSet.test.run('hello', function(data) {
       t.equal(data, 'hello!!');
-      t.ok(hasV, 'hasV');
-      t.ok(hasP, 'hasP');
+      t.ok(asyncTestSet.hasValidateCalled(), 'hasV');
+      t.ok(asyncTestSet.hasPassCalled(), 'hasP');
       t.done();
+
     });
   }
   , 'can run multiple' : function(t) {
-    var hasV_1 = false
-      , hasP_1 = false
-      , hasV_2 = false
-      , hasP_2 = false;
-
-    var test_1 = hola.createTest({
-      excecute: function(init, callback) {
-        callback(init);
-      }
-      , validate: function(data) {
-        hasV_1 = true;
-        return true;
-      }
-      , pass: function(data) {
-        hasP_1 = true;
+    var testSet_1 = testTemplateWith({
+      pass: function(data) {
         return data + '!!';
       }
     });
-
-    var test_2 = hola.createTest({
-      excecute: function(init, callback) {
-        callback(init);
-      }
-      , validate: function(data) {
-        hasV_2 = true;
-        return true;
-      }
-      , pass: function(data) {
-        hasP_2 = true;
+    var testSet_2 = testTemplateWith({
+      pass: function(data) {
         return data + '@@';
       }
     });
 
-    hola.runMulti('hello', [test_1, test_2], function(data) {
-      t.equal(data, 'hello!!@@');
-      t.ok(hasV_1, 'hasV_1');
-      t.ok(hasP_1, 'hasP_1');
-      t.ok(hasV_2, 'hasV_2');
-      t.ok(hasP_2, 'hasP_2');
-      t.done();
-    });
+    hola.runMulti('hello'
+      , [testSet_1.test, testSet_2.test]
+      , function(data) {
+        t.equal(data, 'hello!!@@');
+        t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
+        t.ok(testSet_1.hasPassCalled(), 'hasP_1');
+        t.ok(testSet_2.hasValidateCalled(), 'hasV_2');
+        t.ok(testSet_2.hasPassCalled(), 'hasP_2');
+        t.done();
+      });
   }
   , 'can make group and run it': function(t) {
-    var hasV_1 = false
-      , hasP_1 = false
-      , hasV_2 = false
-      , hasP_2 = false;
-
-    var test_1 = hola.createTest({
-      excecute: function(init, callback) {
-        callback(init);
-      }
-      , validate: function(data) {
-        hasV_1 = true;
-        return true;
-      }
-      , pass: function(data) {
-        hasP_1 = true;
+    var testSet_1 = testTemplateWith({
+      pass: function(data) {
         return data + '!!';
       }
     });
-
-    var test_2 = hola.createTest({
-      excecute: function(init, callback) {
-        callback(init);
-      }
-      , validate: function(data) {
-        hasV_2 = true;
-        return true;
-      }
-      , pass: function(data) {
-        hasP_2 = true;
+    var testSet_2 = testTemplateWith({
+      pass: function(data) {
         return data + '@@';
       }
     });
-    
-    var group = hola.group([test_1, test_2]);
+    var group = hola.group([testSet_1.test, testSet_2.test]);
     group.run('hola', function(data) {
       t.equal(data, 'hola!!@@');
-      t.ok(hasV_1, 'hasV_1');
-      t.ok(hasP_1, 'hasP_1');
-      t.ok(hasV_2, 'hasV_2');
-      t.ok(hasP_2, 'hasP_2');
+      t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
+      t.ok(testSet_1.hasPassCalled(), 'hasP_1');
+      t.ok(testSet_2.hasValidateCalled(), 'hasV_2');
+      t.ok(testSet_2.hasPassCalled(), 'hasP_2');
       t.done();
     });
   }
+  , 'can run group and test.': function(t) {
+    var testSet_1 = testTemplateWith({
+      pass: function(data) {
+        return data + '!!';
+      }
+    });
+    var testSet_2 = testTemplateWith({
+      pass: function(data) {
+        return data + '@@';
+      }
+    });
+    var testSet_3 = testTemplateWith({
+      pass: function(data) {
+        return data + '##';
+      }
+    });
+    var group = hola.group([testSet_1.test, testSet_2.test]);
+    hola.runMulti('hola', [group, testSet_3.test], function(data) {
+      t.equal(data, 'hola!!@@##');
+      t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
+      t.ok(testSet_1.hasPassCalled(), 'hasP_1');
+      t.ok(testSet_2.hasValidateCalled(), 'hasV_2');
+      t.ok(testSet_2.hasPassCalled(), 'hasP_2');
+      t.ok(testSet_3.hasValidateCalled(), 'hasV_2');
+      t.ok(testSet_3.hasPassCalled(), 'hasP_2');
+      t.done();
 
+    });
+  }
+  , 'can build group with group and test': function(t) {
+    var testSet_1 = testTemplateWith({
+      pass: function(data) {
+        return data + '!!';
+      }
+    });
+    var testSet_2 = testTemplateWith({
+      pass: function(data) {
+        return data + '@@';
+      }
+    });
+    var testSet_3 = testTemplateWith({
+      pass: function(data) {
+        return data + '##';
+      }
+    });
+    var subGroup = hola.group([testSet_1.test, testSet_2.test])
+      , group = hola.group([subGroup, testSet_3.test]);
+    group.run('hola', function(data) {
+      t.equal(data, 'hola!!@@##');
+      t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
+      t.ok(testSet_1.hasPassCalled(), 'hasP_1');
+      t.ok(testSet_2.hasValidateCalled(), 'hasV_2');
+      t.ok(testSet_2.hasPassCalled(), 'hasP_2');
+      t.ok(testSet_3.hasValidateCalled(), 'hasV_2');
+      t.ok(testSet_3.hasPassCalled(), 'hasP_2');
+      t.done();
+    });
+  }
+};
+
+function testTemplateWith (options) {
+  var hasValidateCalled = false
+    , hasExecuteCalled = false
+    , hasPassCalled = false;
+
+  var excecute = options.excecute 
+    || function(init, callback) {
+      callback(init);
+    };
+  var validate = options.validate
+    || function(data) {};
+  var pass = options.pass 
+    || function(data) {
+      return data
+    };
+
+  excecute = decorateExecute(excecute);
+  validate = decorateValidate(validate);
+  pass = decoratePass(pass);
+  
+  var test = hola.createTest({
+    excecute: excecute
+    , validate: validate
+    , pass: pass
+  });
+
+  return {
+    test: test
+    , hasExecuteCalled: function(){ 
+      return hasExecuteCalled
+    }
+    , hasValidateCalled: function() {
+      return hasValidateCalled;
+    }
+    , hasPassCalled: function() {
+      return hasPassCalled;
+    }
+  };
+  function decorateValidate(originalValidate) {
+    return function(data) {
+      hasValidateCalled = true;
+      originalValidate.call(null, data);
+    };
+  };
+  function decorateExecute(originalExecute) {
+    return function(data, callback) {
+      hasExecuteCalled= true;
+      originalExecute.call(null, data, callback);
+    };
+  };
+  function decoratePass(originalPass) {
+    return function(data) {
+      hasPassCalled = true;
+      return originalPass.call(null, data);
+    };
+  };
 };
