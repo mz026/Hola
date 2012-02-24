@@ -2,59 +2,51 @@
  *  test file for funkyTest.
  */
 
-var assert = require('assert')
-  , funkyTest = require(__dirname + '/../funkyTest')
+var assert = require(__dirname + '/../myAssert')
+  , hola = require(__dirname + '/../hola')
 
-var async = function(arg, cb) {
+var asyncFunction = function(arg, cb) {
   setTimeout(function() {
     cb(arg);
   }, 500);
 };
 
-var test1 = {
-  name: 'my cool test one'
-  , operate: function(err, input) {
-    return true;
+// basic one
+var basic = hola.createTest({
+  name: 'basic one'
+  , excecute: function(initData, callback) {
+    callback(initData + '!!');
   }
-  , validate: function(target) {
-    assert.ok(target, 'assert target to be true');
-  } 
-  , pass: function(err, target) {
-    var toPass = ! target;
-    return toPass;
+  , validate: function(data, initData) {
+    assert.equal(data, initData + '!!');
   }
-};
-
-var test2 = {
-  // 'this' is validate
-  name: 'my rock test two'
-  , operate: function(err, input) {
-    var self = this;
-    async(input, function(arg) {
-      self(null, arg);
-    });
+  , pass: function(executedResult) {
+    return executedResult + ' Dude~';
   }
-  , validate: function(target) {
-//     assert.ok(target === true, 'assert target to be false');
-    assert.ok(target === false, 'assert target to be false');
-  } 
-  , pass: function(err, target) {
-    return target;
+});
+basic.run('hello', function(data) {});
+
+// async, the usage is totally the same.
+var async = hola.createTest({
+  name: 'async'
+  , excecute: function(initData, callback) {
+    asyncFunction(initData + '!!', callback);
   }
-};
+  , validate: function(executedResult, initData) {
+    assert.equal(executedResult, initData + '!!');
+  }
+  , pass: function(executedResult) {
+    return executedResult;
+  }
+});
+async.run('hello', function(data) {});
 
+// run multi test at one time.
+hola.runMulti('hello', [basic, async], function(data) {});
 
-var t1 = funkyTest.create(test1);
-var t2 = funkyTest.create(test2);
+// group tests
+var group = hola.group('rockGroup', [basic, async]);
+group.run('hola', function(data) {});
 
-// way1:
-// funkyTest.create(test1).run(null, 'dummy input');
-// way2
-// funkyTest.run('dummy input', t1, t2);
-
-var group = funkyTest.group('myGroup', [t1, t2]);
-
-// way3:
-group.run('hello');
-// way4:
-// funkyTest.run('dummy', group);
+// group and test can be mixed
+hola.runMulti('hello', [group, basic], function(data) {});
