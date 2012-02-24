@@ -1,12 +1,15 @@
+require('colors');
 var hola = {};
 hola.createTest = function(options) {
   var excecute = options.excecute
     , validate = options.validate
-    , pass = options.pass;
+    , pass = options.pass
+    , name = options.name || '';
 
   var test = {
     run: function(data, callback) {
       var onExecuted = generateOnExecuted(callback);
+      reportStart('test ' + name);
       excecute(data, onExecuted);
     }
   };
@@ -14,9 +17,11 @@ hola.createTest = function(options) {
   function generateOnExecuted(callback) {
     return function(data) {
       validate(data);
+      reportOK('test ' + name);
       callback.call(null, pass(data));
     };
   };
+
   
 
   return test;
@@ -48,14 +53,24 @@ hola.runMulti = function(data, tests, callback) {
 
 };
 
-hola.group = function(units) {
-  var group = {};
+hola.group = function(name, units) {
+  var group = {}
   group.units = units;
+  group.name = name;
   group.run = function(data, callback) {
+    reportStart('group ' + name);
     hola.runMulti(data, this.units, callback);
+    reportOK('group ' + name);
   };
   return group;
 };
 
+function reportOK(name) {
+  name = name || '';
+  console.log((name + ' OK!').green.bold);
+};
+function reportStart(name) {
+  console.log(('Starting ' + name + '...').white.bold);
+};
 
 module.exports = hola;

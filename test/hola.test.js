@@ -7,7 +7,8 @@ exports.hola = {
   }
   , 'can run one sync': function(t) {
     var testSet = testTemplateWith({
-      pass: function(data) {
+      name: 'basic'
+      , pass: function(data) {
         return data + '!!';
       }
     });
@@ -20,7 +21,8 @@ exports.hola = {
   }
   , 'can run one async': function(t) {
     var asyncTestSet = testTemplateWith({
-      excecute: function(init, callback) {
+      name: 'async'
+      , excecute: function(init, callback) {
         setTimeout(function() {
           callback(init);
         }, 500);
@@ -71,7 +73,7 @@ exports.hola = {
         return data + '@@';
       }
     });
-    var group = hola.group([testSet_1.test, testSet_2.test]);
+    var group = hola.group('myGroup', [testSet_1.test, testSet_2.test]);
     group.run('hola', function(data) {
       t.equal(data, 'hola!!@@');
       t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
@@ -97,7 +99,7 @@ exports.hola = {
         return data + '##';
       }
     });
-    var group = hola.group([testSet_1.test, testSet_2.test]);
+    var group = hola.group('rockGroup', [testSet_1.test, testSet_2.test]);
     hola.runMulti('hola', [group, testSet_3.test], function(data) {
       t.equal(data, 'hola!!@@##');
       t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
@@ -126,8 +128,8 @@ exports.hola = {
         return data + '##';
       }
     });
-    var subGroup = hola.group([testSet_1.test, testSet_2.test])
-      , group = hola.group([subGroup, testSet_3.test]);
+    var subGroup = hola.group('Funky Group', [testSet_1.test, testSet_2.test])
+      , group = hola.group('Fusion Ones', [subGroup, testSet_3.test]);
     group.run('hola', function(data) {
       t.equal(data, 'hola!!@@##');
       t.ok(testSet_1.hasValidateCalled(), 'hasV_1');
@@ -156,6 +158,7 @@ function testTemplateWith (options) {
     || function(data) {
       return data
     };
+  var name = options.name || '';
 
   excecute = decorateExecute(excecute);
   validate = decorateValidate(validate);
@@ -165,6 +168,7 @@ function testTemplateWith (options) {
     excecute: excecute
     , validate: validate
     , pass: pass
+    , name: name
   });
 
   return {
