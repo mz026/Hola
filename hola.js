@@ -18,7 +18,7 @@ hola.createTest = function(options) {
     return function(executedResult) {
       validate(executedResult, initData);
       reportOK('test ' + name);
-      callback.call(null, pass(executedResult));
+      callback.call(null, pass(executedResult, initData));
     };
   };
 

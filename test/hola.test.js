@@ -8,12 +8,13 @@ exports.hola = {
   , 'can run one sync': function(t) {
     var testSet = testTemplateWith({
       name: 'basic'
-      , pass: function(data) {
-        return data + '!!';
+      , pass: function(data, initData) {
+        console.log(initData);
+        return data + '!!' + initData;
       }
     });
     testSet.test.run('hello', function(data) {
-      t.equal(data, 'hello!!');
+      t.equal(data, 'hello!!hello');
       t.ok(testSet.hasValidateCalled(), 'hasV');
       t.ok(testSet.hasPassCalled(), 'hasP');
       t.done();
@@ -27,7 +28,7 @@ exports.hola = {
           callback(init);
         }, 500);
       }
-      , pass: function(data) {
+      , pass: function(data, initData) {
         return data + '!!';
       }
     });
@@ -64,12 +65,12 @@ exports.hola = {
   }
   , 'can make group and run it': function(t) {
     var testSet_1 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '!!';
       }
     });
     var testSet_2 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '@@';
       }
     });
@@ -85,17 +86,17 @@ exports.hola = {
   }
   , 'can run group and test.': function(t) {
     var testSet_1 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '!!';
       }
     });
     var testSet_2 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '@@';
       }
     });
     var testSet_3 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '##';
       }
     });
@@ -114,17 +115,17 @@ exports.hola = {
   }
   , 'can build group with group and test': function(t) {
     var testSet_1 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '!!';
       }
     });
     var testSet_2 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '@@';
       }
     });
     var testSet_3 = testTemplateWith({
-      pass: function(data) {
+      pass: function(data, initData) {
         return data + '##';
       }
     });
@@ -186,7 +187,7 @@ function testTemplateWith (options) {
   function decorateValidate(originalValidate) {
     return function(data) {
       hasValidateCalled = true;
-      originalValidate.call(null, data);
+      originalValidate.apply(null, arguments);
     };
   };
   function decorateExecute(originalExecute) {
@@ -198,7 +199,7 @@ function testTemplateWith (options) {
   function decoratePass(originalPass) {
     return function(data) {
       hasPassCalled = true;
-      return originalPass.call(null, data);
+      return originalPass.apply(null, arguments);
     };
   };
 };
