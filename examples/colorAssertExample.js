@@ -1,3 +1,3 @@
-var assert = require(__dirname + '/../myAssert');
+var assert = require(__dirname + '/../colorAssert');
 
 assert.ok(false);

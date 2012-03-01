@@ -6,7 +6,7 @@ var loginURL = 'dummy';
   , authURL = 'dummy';
 var rest = require('restler')
   , funkyTest = require(__dirname + '/../funkyTest')
-  , assert = require(__dirname + '/../myAssert');
+  , assert = require(__dirname + '/../colorAssert');
 
 var login = funkyTest.create({
     name: 'login api'
